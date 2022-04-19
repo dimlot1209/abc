@@ -1,0 +1,87 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+kw = input("Nhap kw: ")
+
+driver = webdriver.Chrome(executable_path="../chromedriver.exe")
+driver.get("https://www.google.com/")
+
+ele = driver.find_element(By.NAME,"q")
+ele.send_keys(kw)
+ele.submit()
+
+eles = driver.find_elements(By.CSS_SELECTOR,"div.g")
+for e in eles:
+    print(e.find_element(By.TAG_NAME,"h3").text)
+driver.quit()
+
+
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.chrome.service import Service
+
+driver = webdriver.Chrome(executable_path="../chromedriver.exe")
+# driver = webdriver.Chrome(service=Service(executable_path="../chromedriver.exe"))
+driver.get("https://vnexpress.net/")
+
+eles = driver.find_elements(By.CSS_SELECTOR,"article.item-news")
+for e in eles:
+    try:
+        print("=======")
+        print(e.find_element(By.TAG_NAME,"h3").text)
+        print(e.find_element(By.CSS_SELECTOR,".thumb-art img").get_attribute("src"))
+    except:
+        pass
+driver.quit()
+
+
+import json
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.chrome.service import Service
+
+s = Service(executable_path="../chromedriver.exe")
+driver = webdriver.Chrome(service=s)
+driver.get("https://lms.ou.edu.vn/")
+
+driver.implicitly_wait(2)
+
+
+driver.find_element(By.CSS_SELECTOR,"a.main-btn").click()
+driver.find_element(By.CSS_SELECTOR,"button.login100-form-btn").click()
+
+user_type = Select(driver.find_element(By.ID,"form-usertype"))
+user_type.select_by_index(0)
+
+with open("../account.json","r") as f:
+    data = json.load(f)
+
+    username = driver.find_element(By.ID,"form-username")
+    username.send_keys(data["username"])
+    password = driver.find_element(By.ID, "form-password")
+    password.send_keys(data["password"])
+
+driver.implicitly_wait(2)
+driver.find_element(By.CLASS_NAME,"m-loginbox-submit-btn").click()
+
+
+eles = WebDriverWait(driver,30).until(
+    ec.presence_of_all_elements_located((By.CSS_SELECTOR,".card .card-body"))
+)
+
+# driver.implicitly_wait(10)
+# eles = driver.find_element(By.CSS_SELECTOR,".card .card-body")
+for e in eles:
+    print(e.text)
+
+driver.execute_script("window.scrollTo(0,700)")
+driver.get_screenshot_as_file("test.png")
+
+driver.quit()
